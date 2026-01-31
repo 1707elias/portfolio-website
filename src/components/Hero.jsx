@@ -4,10 +4,19 @@ const Hero = () => {
     const [offset, setOffset] = useState(0);
 
     useEffect(() => {
+        let ticking = false;
+
         const handleScroll = () => {
-            setOffset(window.scrollY);
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    setOffset(window.scrollY);
+                    ticking = false;
+                });
+                ticking = true;
+            }
         };
-        window.addEventListener('scroll', handleScroll);
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
@@ -16,7 +25,6 @@ const Hero = () => {
 
     return (
         <header className="hero-section">
-
             <div style={{
                 opacity,
                 transform,

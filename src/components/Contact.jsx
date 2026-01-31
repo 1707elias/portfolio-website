@@ -1,17 +1,52 @@
 import React, { useRef, useState } from 'react';
 import emailjs from '@emailjs/browser';
 import useScrollReveal from '../hooks/useScrollReveal';
-import { FaDiscord, FaPaperPlane, FaCheck, FaEnvelope } from 'react-icons/fa';
+import { FaDiscord, FaPaperPlane, FaCheck, FaEnvelope, FaExclamationTriangle } from 'react-icons/fa';
 
 const Contact = () => {
     const { ref, isVisible } = useScrollReveal();
     const form = useRef();
 
     const [status, setStatus] = useState('');
+    const [errors, setErrors] = useState({});
+
+    const validateEmail = (email) => {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    };
+
+    const validateForm = () => {
+        const formData = new FormData(form.current);
+        const newErrors = {};
+
+        const name = formData.get('user_name')?.trim();
+        const email = formData.get('user_email')?.trim();
+        const message = formData.get('message')?.trim();
+
+        if (!name || name.length < 2) {
+            newErrors.name = 'Bitte gib deinen Namen ein (mind. 2 Zeichen)';
+        }
+
+        if (!email || !validateEmail(email)) {
+            newErrors.email = 'Bitte gib eine gültige E-Mail-Adresse ein';
+        }
+
+        if (!message || message.length < 10) {
+            newErrors.message = 'Bitte gib eine Nachricht ein (mind. 10 Zeichen)';
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
 
     const sendEmail = (e) => {
         e.preventDefault();
+
+        if (!validateForm()) {
+            return;
+        }
+
         setStatus('sending');
+        setErrors({});
 
         emailjs.sendForm(
             import.meta.env.VITE_EMAILJS_SERVICE_ID,
@@ -25,6 +60,11 @@ const Contact = () => {
             }, () => {
                 setStatus('error');
             });
+    };
+
+    const resetForm = () => {
+        setStatus('');
+        setErrors({});
     };
 
     return (
@@ -67,29 +107,70 @@ const Contact = () => {
                     </div>
 
                     {/* Rechte Seite: Das Formular */}
-                    <form ref={form} onSubmit={sendEmail} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <form ref={form} onSubmit={sendEmail} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }} noValidate>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                            <label style={{ fontSize: '0.9rem', color: '#cbd5e1' }}>Name</label>
-                            <input type="text" name="user_name" required style={inputStyle} placeholder="Dein Name" />
+                            <label htmlFor="user_name" style={{ fontSize: '0.9rem', color: '#cbd5e1' }}>Name</label>
+                            <input
+                                type="text"
+                                id="user_name"
+                                name="user_name"
+                                style={{ ...inputStyle, ...(errors.name ? errorInputStyle : {}) }}
+                                placeholder="Dein Name"
+                                aria-invalid={!!errors.name}
+                                aria-describedby={errors.name ? 'name-error' : undefined}
+                            />
+                            {errors.name && <span id="name-error" style={errorStyle}><FaExclamationTriangle size={12} /> {errors.name}</span>}
                         </div>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                            <label style={{ fontSize: '0.9rem', color: '#cbd5e1' }}>E-Mail</label>
-                            <input type="email" name="user_email" required style={inputStyle} placeholder="deine@email.de" />
+                            <label htmlFor="user_email" style={{ fontSize: '0.9rem', color: '#cbd5e1' }}>E-Mail</label>
+                            <input
+                                type="email"
+                                id="user_email"
+                                name="user_email"
+                                style={{ ...inputStyle, ...(errors.email ? errorInputStyle : {}) }}
+                                placeholder="deine@email.de"
+                                aria-invalid={!!errors.email}
+                                aria-describedby={errors.email ? 'email-error' : undefined}
+                            />
+                            {errors.email && <span id="email-error" style={errorStyle}><FaExclamationTriangle size={12} /> {errors.email}</span>}
                         </div>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                            <label style={{ fontSize: '0.9rem', color: '#cbd5e1' }}>Nachricht</label>
-                            <textarea name="message" required style={{ ...inputStyle, minHeight: '120px', resize: 'vertical' }} placeholder="Wie kann ich helfen?" />
+                            <label htmlFor="message" style={{ fontSize: '0.9rem', color: '#cbd5e1' }}>Nachricht</label>
+                            <textarea
+                                id="message"
+                                name="message"
+                                style={{ ...inputStyle, minHeight: '120px', resize: 'vertical', ...(errors.message ? errorInputStyle : {}) }}
+                                placeholder="Wie kann ich helfen?"
+                                aria-invalid={!!errors.message}
+                                aria-describedby={errors.message ? 'message-error' : undefined}
+                            />
+                            {errors.message && <span id="message-error" style={errorStyle}><FaExclamationTriangle size={12} /> {errors.message}</span>}
                         </div>
 
-                        <button type="submit" className="btn primary" style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }} disabled={status === 'sending' || status === 'success'}>
-                            {status === 'sending' && 'Sende...'}
-                            {status === 'success' && <><FaCheck /> Gesendet!</>}
-                            {status === 'error' && 'Fehler, versuch es nochmal'}
-                            {status === '' && <><FaPaperPlane /> Absenden</>}
-                        </button>
+                        {status === 'error' ? (
+                            <button
+                                type="button"
+                                onClick={resetForm}
+                                className="btn primary"
+                                style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+                            >
+                                <FaExclamationTriangle /> Erneut versuchen
+                            </button>
+                        ) : (
+                            <button
+                                type="submit"
+                                className="btn primary"
+                                style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+                                disabled={status === 'sending' || status === 'success'}
+                            >
+                                {status === 'sending' && 'Sende...'}
+                                {status === 'success' && <><FaCheck /> Gesendet!</>}
+                                {status === '' && <><FaPaperPlane /> Absenden</>}
+                            </button>
+                        )}
 
                     </form>
 
@@ -108,6 +189,7 @@ const Contact = () => {
     );
 };
 
+// Styles für die Inputs (Dark Mode)
 const inputStyle = {
     padding: '0.8rem',
     borderRadius: '8px',
@@ -117,6 +199,18 @@ const inputStyle = {
     fontSize: '1rem',
     outline: 'none',
     fontFamily: 'inherit'
+};
+
+const errorInputStyle = {
+    borderColor: '#ef4444'
+};
+
+const errorStyle = {
+    color: '#ef4444',
+    fontSize: '0.85rem',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.3rem'
 };
 
 export default Contact;

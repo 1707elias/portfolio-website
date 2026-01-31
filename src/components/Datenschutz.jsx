@@ -5,7 +5,7 @@ import SEO from './SEO';
 const Datenschutz = () => {
     return (
         <section className="section" style={{ padding: '8rem 2rem 4rem', minHeight: '80vh', borderTop: 'none' }}>
-            {/* SEO Tag hinzufügen */}
+
             <SEO title="Datenschutzerklärung" description="Hinweise zum Datenschutz auf der Website von Elias Schlappner." />
 
             <div className="content-box">

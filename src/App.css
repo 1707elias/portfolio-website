@@ -122,28 +122,6 @@
   }
 }
 
-.logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #f8fafc;
-}
-
-.nav-links {
-  display: flex;
-  gap: 2rem;
-}
-
-.nav-links a {
-  color: #cbd5e1;
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.2s;
-}
-
-.nav-links a:hover {
-  color: #38bdf8;
-}
-
 .section {
   padding: 6rem 0;
   border-top: 1px solid #1e293b;
@@ -227,6 +205,7 @@ h3 {
   color: #94a3b8;
 }
 
+/* Footer */
 .footer {
   text-align: center;
   padding: 4rem 0 2rem;
@@ -275,6 +254,7 @@ h3 {
 .contact-btn {
   display: inline-block;
   padding: 0.8rem 1.5rem;
+
   background-color: #38bdf8;
   color: #0f172a;
 

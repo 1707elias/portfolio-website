@@ -27,6 +27,7 @@ const About = () => {
                     Hier sind die Tools, mit denen ich aktuell am liebsten experimentiere und lerne:
                 </p>
 
+                {/* Icon Grid */}
                 <div className="skills-grid" style={{ marginTop: '2rem', display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
                     <div style={skillStyle}>
                         <FaReact size={40} color="#61DAFB" />

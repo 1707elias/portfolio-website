@@ -4,7 +4,6 @@ import useScrollReveal from '../hooks/useScrollReveal';
 const Projects = () => {
     const { ref, isVisible } = useScrollReveal();
 
-    // Die Daten schön getrennt vom Design
     const projectData = [
         {
             title: "Python Bild-Generator",
@@ -16,7 +15,7 @@ const Projects = () => {
         {
             title: "Portfolio Website",
             description: "Genau diese Seite hier! Ein persönliches Projekt, um meine Skills in React und Vite zu vertiefen und eine moderne Web-Präsenz aufzubauen.",
-            link: "https://github.com/1707elias/elias-portfolio",
+            link: "https://github.com/1707elias/portfolio-website.git",
             linkText: "Code auf GitHub ansehen →",
             delay: "delay-200"
         },
